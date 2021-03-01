@@ -1,0 +1,55 @@
+// create an array with our two pipelines
+pipelines = ["awsome-pipeline"]
+// iterate through the array and call the create_pipeline method
+pipelines.each { pipeline ->
+    println "Creating pipeline ${pipeline}"
+    create_pipeline(pipeline)
+}
+// a method that creates a basic pipeline with the given parameter name
+def create_pipeline(String name) {
+    pipelineJob(name) {
+        definition {
+            cps {
+                sandbox(true)
+                script("""
+// this is an example declarative pipeline that says hello and goodbye
+pipeline {
+    environment {
+      registry = "{{ dockerhub_username }}/YourRepository"
+      registryCredential = 'dockerhub-account'
+    dockerImage = ''
+    }
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/atileren/platform-project.git', credentialsId: 'github-username', branch: 'app'
+            }
+        }
+        stage('Building our image') {
+            steps{
+              dir("web-app"){
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+              }
+            }
+        }
+        stage('Push Image') {
+            steps{
+                script {
+                     docker.withRegistry( '', registryCredential){                            
+                     dockerImage.push()
+                     }
+                }
+            } 
+        }
+
+
+
+}
+""")
+            }
+        }
+    }
+}

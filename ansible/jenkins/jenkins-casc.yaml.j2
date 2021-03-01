@@ -24,3 +24,27 @@ jenkins:
 jobs:
   - file: /usr/local/seedjob.groovy
 
+credentials:
+  system:
+    domainCredentials:
+      - domain :
+        credentials:
+          - usernamePassword:
+              scope: SYSTEM
+              id: github-account
+              username: {{ github_username  }}
+              password: {{ github_password  }}
+        credentials:
+          - usernamePassword:
+              scope: SYSTEM
+              id: dockerhub-account
+              username: {{ dockerhub_username  }}
+              password: {{ dockerhub_password  }}
+
+
+tool:
+  git:
+    installations:
+      - name: git
+        home: /usr/local/bin/git
+

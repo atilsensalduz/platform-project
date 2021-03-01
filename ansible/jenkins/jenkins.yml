@@ -2,23 +2,29 @@
   - name: "Insall Jenkins"
     hosts: deployer
     become: true
-    vars_prompt:
-    - name: jenkins_admin_password
-      prompt: "Jenkisn admin user password"
-      private: true
-    - name: jenkins_dev_password
-      prompt: "Jenkisn dev user password"
-      private: true
-
     vars:
       ansible_ssh_private_key_file: "/workspace/tf/infra/provision/access/deployment-ec2-key"
+      jenkins_admin_password: ""
+      jenkins_dev_password: ""
+      github_username: ""
+      github_password: ""
+      dockerhub_username: ""
+      dockerhub_password: ""
+            
 
     tasks:
-    - name: generate confgi file
+    - name: generate jenkins config file
       template:
         src: /workspace/ansible/jenkins/jenkins-casc.yaml.j2
         dst: /workspace/ansible/jenkins/jenkins-casc.yaml
       delegate_to: 127.0.0.1
+
+    - name: generate pipeline file
+      template:
+        src: /workspace/ansible/jenkins/seedjob.groovy.j2
+        dst: /workspace/ansible/jenkins/seedjob.groovy
+      delegate_to: 127.0.0.1
+
 
     - name: create build directory
       file:
