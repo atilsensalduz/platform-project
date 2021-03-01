@@ -1,3 +1,4 @@
 *
 */
 !.gitignore
+../.terraform.lock.hcl
