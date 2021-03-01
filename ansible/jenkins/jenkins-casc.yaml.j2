@@ -4,9 +4,9 @@ jenkins:
       allowsSignup: false
       users:
         - id: "admin"
-          password: "admin12345"
+          password: "{{ jenkins_admin_password  }}"
         - id: "dev"
-          password: "dev123"
+          password: "{{ jenkins_dev_passwrod }}"
   authorizationStrategy:
     globalMatrix:
       permissions:
