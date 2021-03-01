@@ -1,0 +1,41 @@
+---
+
+- hosts: localhost
+  connection: local
+  environment:
+    KOPS_STATE_STORE: "{{ state_store }}"
+  roles:
+    - kops-install
+    - kubectl-install
+    - create-state-store
+
+  tasks:
+  - name: set subnet id variable
+    shell: terraform output kops_subnet_id | sed 's/"//g'
+    args:
+      chdir: /workspace/tf/infra/
+    register: kops_subnet_id
+
+  - set_fact:
+      kops_subnet_id={{ kops_subnet_id.stdout }}
+
+  - debug:
+      var: kops_subnet_id
+
+  - name: set pvc id variable
+    shell:  terraform output kops_vpc_id | sed 's/"//g'
+    args:
+      chdir: /workspace/tf/infra/
+    register: kops_vpc_id
+
+  - set_fact:
+      kops_vpc_id={{ kops_vpc_id.stdout }}
+
+  - debug:
+      var: kops_vpc_id
+
+  - name: create cluster config
+    shell: kops create cluster --zones={{ aws_zones }}  --name={{ cluster_name }} --node-count={{ node_count }} --node-size={{ node_size }} --master-size={{ master_size }} --master-count={{ master_count }} --dns private --ssh-public-key={{ ssh_public_key }} --vpc={{ kops_vpc_id }} --subnets={{ kops_subnet_id }} --state {{ state_store }}
+
+  - name: create cluster
+    shell: kops update cluster --name {{ cluster_name }} --yes --admin

@@ -1,0 +1,7 @@
+node_modules
+waypoint.hcl
+Jenkinsfile
+Dockerfile
+.dockerignore
+.git
+.gitignore

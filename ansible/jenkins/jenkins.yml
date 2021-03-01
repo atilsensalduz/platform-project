@@ -1,0 +1,44 @@
+---
+  - name: "Insall Jenkins"
+    hosts: deployer
+    become: true
+    vars:
+      ansible_ssh_private_key_file: "/workspace/tf/infra/provision/access/deployment-ec2-key"
+
+    tasks:
+    - name: create build directory
+      file:
+        path: /workspace/jenkins_build
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+        recurse: yes
+
+    - name: copy Dockerfile
+      copy:
+        src: "{{ item }}"
+        dest: /workspace/jenkins_build/
+        owner: root
+        group: root
+        mode: '0644'
+      with_fileglob:
+      - /workspace/ansible/jenkins/*
+
+    - name: build container image
+      docker_image:
+        name: jenkins-casc:v1.0
+        build:
+          path: /workspace/jenkins_build
+        source: build
+        state: present
+ 
+
+    - name: Create nginx container
+      docker_container:
+        name: jenkins-casc
+        image: jenkins-casc:v1.0
+        state: started
+        recreate: yes
+        published_ports:
+          - 8080:8080 

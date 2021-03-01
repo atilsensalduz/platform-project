@@ -1,0 +1,23 @@
+---
+
+#############
+# Install Kops
+#############
+
+- name: get latest kops version
+  shell: curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4
+  register: kops_version
+
+- set_fact:
+    kops_ver={{ kops_version.stdout }}
+
+- name: Download Kops binaries
+  get_url:
+    url: https://github.com/kubernetes/kops/releases/download/{{ kops_ver }}/kops-linux-amd64
+    dest: /usr/local/bin/kops
+    owner: root
+    group: root
+    mode: 0755
+    force: yes
+  become: true
+

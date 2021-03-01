@@ -1,0 +1,21 @@
+---
+
+cluster_name: dev.atil.k8s.local
+state_store: s3://atil-kops-state-store
+
+## Remote access
+ssh_public_key: /workspace/tf/infra/provision/access//deployment-ec2-key.pub
+
+## Regions / Availability zones
+aws_region: us-east-1
+aws_zones: us-east-1a
+
+# Master configuration
+master_size: t2.micro
+master_count: 1
+
+# Node configuration
+node_size: t2.micro
+node_count: 2
+
+tag_environment: Development

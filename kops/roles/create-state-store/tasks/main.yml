@@ -1,0 +1,8 @@
+---
+
+- name: create s3 bucket
+  shell: aws s3api create-bucket --bucket {{ state_store | replace('s3://', '') }} --region {{ aws_region }}
+  become: no
+  args:
+    executable: /bin/bash
+ 

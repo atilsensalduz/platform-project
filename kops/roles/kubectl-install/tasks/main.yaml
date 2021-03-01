@@ -1,0 +1,22 @@
+---
+
+#############
+# Install Kubectl
+#############
+
+- name: get kubectl version
+  command: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
+  register: kubectl_version
+
+- set_fact:
+    kubectl_ver={{ kubectl_version.stdout }}
+
+- name: Download Kubectl binaries
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_ver }}/bin/linux/amd64/kubectl
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: 0755
+    force: yes
+  become: true
