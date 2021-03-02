@@ -6,7 +6,7 @@ metadata:
   name: web-app
 spec:
   ports:
-  - port: 80
+  - port: 8080
     targetPort: 3000
     protocol: TCP
   selector:
