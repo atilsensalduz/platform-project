@@ -60,5 +60,8 @@ credentials:
               id: dockerhub-account
               username: {{ dockerhub_username  }}
               password: {{ dockerhub_password  }}
-
-
+          - string:
+              scope: GLOBAL
+              id: "kubeconfigID"
+              secret: "{{ jenkins_user_token }}"
+              description: "Kubernetes Jenkins User Token"

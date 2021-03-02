@@ -8,8 +8,18 @@
   tasks:
   - name: destroy kubernetes cluster
     shell: kops delete cluster --name {{ cluster_name  }} --yes
+    register: kubernetes
+
+  - debug:
+      msg: "{{ kubernetes.stdout }}"
+
 
   - name: infrastructure destroy 
     shell: terraform destroy -auto-approve
     args:
       chdir: /workspace/tf/infra/
+    register: terraform
+
+  - debug:
+      msg: "{{ terraform.stdout }}"
+

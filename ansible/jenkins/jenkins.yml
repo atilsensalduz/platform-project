@@ -4,16 +4,19 @@
     become: true
     vars:
       ansible_ssh_private_key_file: "/workspace/tf/infra/provision/access/deployment-ec2-key"
-      jenkins_admin_password: "admin12345"
-      jenkins_dev_password: "dev123"
-      github_username: "atileren"
-      github_password: '123Qaz!12'
-      dockerhub_username: "atileren"
-      dockerhub_password: '1qaz!QAZ'
+      jenkins_admin_password: ""
+      jenkins_dev_password: ""
+      github_username: ""
+      github_password: ''
+      dockerhub_username: ""
+      dockerhub_password: ''
+      namespace: ''
+      jenkins_k8s_user: ''
             
 
     tasks:
-    - shell: cat ~/.kube/config | grep certificate-authority-data | awk '{print $2}'
+    - name: get certificate-authority-data from kubeconfig
+      shell: cat ~/.kube/config | grep certificate-authority-data | awk '{print $2}'
       register: ca_result
       delegate_to: 127.0.0.1
       become: false
@@ -21,7 +24,8 @@
     - set_fact:
         ca={{ ca_result.stdout }}
 
-    - shell:  cat ~/.kube/config | grep server | awk '{print $2}'
+    - name:  get server url from kubeconfig
+      shell:  cat ~/.kube/config | grep server | awk '{print $2}'
       register: server_url_result
       delegate_to: 127.0.0.1
       become: false
@@ -29,7 +33,8 @@
     - set_fact:
         server_url={{ server_url_result.stdout }}
 
-    - shell:  cat ~/.kube/config | grep current-context | awk '{print $2}'
+    - name: get current-context from kubeconfig
+      shell:  cat ~/.kube/config | grep current-context | awk '{print $2}'
       register: context_name_result
       delegate_to: 127.0.0.1
       become: false
@@ -37,13 +42,47 @@
     - set_fact:
         context_name={{ context_name_result.stdout }}
 
-    - shell: "cat ~/.kube/config | grep 'cluster: '  | awk '{print $2}'"
+    - name: get cluster name from kubeconfig
+      shell: "cat ~/.kube/config | grep 'cluster: '  | awk '{print $2}'"
       register: cluster_name_result
       delegate_to: 127.0.0.1
       become: false
 
     - set_fact:
         cluster_name={{ cluster_name_result.stdout }}
+
+    - name: create {{ namespace }} namespace
+      shell: kubectl create ns {{ namespace }}
+      delegate_to: 127.0.0.1
+      become: false
+    
+    - name: create serviceaccount {{ jenkins_k8s_user }} in {{ namespace }} namespace
+      shell: kubectl -n {{ namespace }} create serviceaccount {{ jenkins_k8s_user }}
+      delegate_to: 127.0.0.1
+      become: false
+
+    - name: create rolebinding {{ jenkins_k8s_user }}-binding in {{ namespace }} namespace
+      shell: kubectl -n {{ namespace }} create rolebinding {{ jenkins_k8s_user }}-binding --clusterrole=cluster-admin --serviceaccount={{ namespace }}:{{ jenkins_k8s_user }}
+      delegate_to: 127.0.0.1
+      become: false
+
+    - name: get {{ jenkins_k8s_user }} serviceaccount token name
+      shell: kubectl -n {{ namespace }} get serviceaccount {{ jenkins_k8s_user }} -o go-template {% raw %} --template='{{range .secrets}}{{.name}}{{"\n"}}{{end}}' {% endraw %}
+      register: token_name_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        token_name={{ token_name_result.stdout }}
+
+    - name: get {{ jenkins_k8s_user }} serviceaccount token
+      shell: kubectl -n {{ namespace }} get secrets {{ token_name }} -o go-template --template {% raw %} '{{index .data "token"}}' {% endraw %} | base64 -d
+      register: jenkins_user_token_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        jenkins_user_token={{ jenkins_user_token_result.stdout }}
             
     - name: generate jenkins config file
       template:
