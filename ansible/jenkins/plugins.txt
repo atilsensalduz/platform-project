@@ -6,3 +6,13 @@ workflow-job
 workflow-cps
 
 matrix-auth
+
+git
+ansicolor
+docker-workflow
+github-branch-source
+kubernetes
+docker
+kubernetes-credentials-provider
+kubernetes-cli
+kubernetes-cd

@@ -39,3 +39,14 @@
 
   - name: create cluster
     shell: kops update cluster --name {{ cluster_name }} --yes --admin
+
+
+  - name: Verify that all Kubernetes nodes are ready
+    shell: kops validate cluster --name {{ cluster_name }} --state {{ state_store }}
+    register: cmd_result
+    until: cmd_result.stdout.find('Your cluster ' + cluster_name + ' is ready') != -1
+    retries: 20
+    delay: 60
+
+  - name: Configure kubectl using kops
+    shell: kops export kubecfg --name {{ cluster_name }} --state {{ state_store }}

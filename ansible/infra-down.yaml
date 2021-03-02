@@ -1,0 +1,15 @@
+---
+
+- hosts: localhost
+  connection: local
+  environment:
+     KOPS_STATE_STORE: "{{ state_store }}"
+
+  tasks:
+  - name: destroy kubernetes cluster
+    shell: kops delete cluster --name {{ cluster_name  }} --yes
+
+  - name: infrastructure destroy 
+    shell: terraform destroy -auto-approve
+    args:
+      chdir: /workspace/tf/infra/

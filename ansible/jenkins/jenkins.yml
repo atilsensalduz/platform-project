@@ -4,25 +4,57 @@
     become: true
     vars:
       ansible_ssh_private_key_file: "/workspace/tf/infra/provision/access/deployment-ec2-key"
-      jenkins_admin_password: ""
-      jenkins_dev_password: ""
-      github_username: ""
-      github_password: ""
-      dockerhub_username: ""
-      dockerhub_password: ""
+      jenkins_admin_password: "admin12345"
+      jenkins_dev_password: "dev123"
+      github_username: "atileren"
+      github_password: '123Qaz!12'
+      dockerhub_username: "atileren"
+      dockerhub_password: '1qaz!QAZ'
             
 
     tasks:
+    - shell: cat ~/.kube/config | grep certificate-authority-data | awk '{print $2}'
+      register: ca_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        ca={{ ca_result.stdout }}
+
+    - shell:  cat ~/.kube/config | grep server | awk '{print $2}'
+      register: server_url_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        server_url={{ server_url_result.stdout }}
+
+    - shell:  cat ~/.kube/config | grep current-context | awk '{print $2}'
+      register: context_name_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        context_name={{ context_name_result.stdout }}
+
+    - shell: "cat ~/.kube/config | grep 'cluster: '  | awk '{print $2}'"
+      register: cluster_name_result
+      delegate_to: 127.0.0.1
+      become: false
+
+    - set_fact:
+        cluster_name={{ cluster_name_result.stdout }}
+            
     - name: generate jenkins config file
       template:
         src: /workspace/ansible/jenkins/jenkins-casc.yaml.j2
-        dst: /workspace/ansible/jenkins/jenkins-casc.yaml
+        dest: /workspace/ansible/jenkins/jenkins-casc.yaml
       delegate_to: 127.0.0.1
 
     - name: generate pipeline file
       template:
         src: /workspace/ansible/jenkins/seedjob.groovy.j2
-        dst: /workspace/ansible/jenkins/seedjob.groovy
+        dest: /workspace/ansible/jenkins/seedjob.groovy
       delegate_to: 127.0.0.1
 
 
@@ -54,7 +86,7 @@
         state: present
  
 
-    - name: Create nginx container
+    - name: Create jenkins container
       docker_container:
         name: jenkins-casc
         image: jenkins-casc:v1.0
@@ -62,3 +94,5 @@
         recreate: yes
         published_ports:
           - 8080:8080 
+        volumes: 
+          - /var/run/docker.sock:/var/run/docker.sock

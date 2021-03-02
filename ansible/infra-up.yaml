@@ -1,0 +1,29 @@
+---
+
+- hosts: localhost
+  connection: local
+
+  tasks:
+  - name: infrastructure setup 
+    shell: terraform apply -auto-approve
+    args:
+      chdir: /workspace/tf/infra/
+    register: terraform
+
+  - debug: 
+      msg: "{{ terraform.stdout }}"
+
+  - name: create kubernetes cluster on aws with kops
+    shell: ansible-playbook /workspace/kops/create-cluster.yaml
+    register: kops
+
+  - debug:
+      msg: "{{ kops.stdout }}"
+
+  - name: jenkins up and running
+    shell: ansible-playbook -i /workspace/ansible/host.ini --become --become-user=root /workspace/ansible/jenkins/jenkins.yml
+    register: jenkins
+
+  - debug:
+      msg: "{{ jenkins.stdout }}"
+

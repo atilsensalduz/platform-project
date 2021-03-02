@@ -15,22 +15,22 @@ def create_pipeline(String name) {
 // this is an example declarative pipeline that says hello and goodbye
 pipeline {
     environment {
-      registry = "{{ dockerhub_username }}/YourRepository"
+      registry = "{{ dockerhub_username }}/web-app"
       registryCredential = 'dockerhub-account'
-    dockerImage = ''
+      dockerImage = ''
     }
     agent any
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/atileren/platform-project.git', credentialsId: 'github-username', branch: 'app'
+                git url: 'https://github.com/atileren/platform-project.git', credentialsId: 'github-account', branch: 'master'
             }
         }
         stage('Building our image') {
             steps{
               dir("web-app"){
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build registry + ":latest"
                 }
               }
             }
@@ -44,9 +44,21 @@ pipeline {
                 }
             } 
         }
+        stage('List nodes') {
+           steps{
+              withKubeConfig([credentialsId: 'kubeconfigID',
+                    caCertificate: "{{ ca }}",
+                    serverUrl: "{{ server_url  }}",
+                    contextName: "{{ context_name  }}",
+                    clusterName: "{{ cluster_name  }}",
+                    namespace: 'default'
+                    ]) {
+                          sh 'kubectl get nodes'
+                       }
+              } 
+        }
 
-
-
+    }
 }
 """)
             }

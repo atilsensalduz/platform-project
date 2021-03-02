@@ -1,0 +1,5 @@
+---
+
+cluster_name: dev.atil.k8s.local
+state_store: s3://atil-kops-state-store
+

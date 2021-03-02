@@ -104,8 +104,6 @@ resource "null_resource" "ansible-playbook" {
   provisioner "local-exec" {
     command = <<EOT
       ansible-playbook -i /workspace/ansible/host.ini --become --become-user=root /workspace/ansible/docker.yml
-      ansible-playbook -i /workspace/ansible/host.ini --become --become-user=root /workspace/ansible/jenkins/jenkins.yml
-      ansible-playbook -i /workspace/ansible/host.ini --become --become-user=root /workspace/ansible/waypoint.yml
     EOT
   }
   depends_on = ["local_file.inventory"]

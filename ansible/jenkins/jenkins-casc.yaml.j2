@@ -6,7 +6,7 @@ jenkins:
         - id: "admin"
           password: "{{ jenkins_admin_password  }}"
         - id: "dev"
-          password: "{{ jenkins_dev_passwrod }}"
+          password: "{{ jenkins_dev_password }}"
   authorizationStrategy:
     globalMatrix:
       permissions:
@@ -18,6 +18,27 @@ jenkins:
         - "Overall/Read:authenticated"
         - "Run/Replay:dev"
         - "Run/Update:dev"
+  
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        templates:
+          - labelString: "docker-agent"
+            dockerTemplateBase:
+              image: "jenkins/slave"
+              volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+            remoteFs: "/home/jenkins/agent"
+            connector:
+              attach:
+                user: "jenkins"
+            instanceCapStr: "10"
+            retentionStrategy:
+              idleMinutes: 1
+
 
   numExecutors: 1
 
@@ -30,21 +51,14 @@ credentials:
       - domain :
         credentials:
           - usernamePassword:
-              scope: SYSTEM
+              scope: GLOBAL
               id: github-account
               username: {{ github_username  }}
               password: {{ github_password  }}
-        credentials:
           - usernamePassword:
-              scope: SYSTEM
+              scope: GLOBAL
               id: dockerhub-account
               username: {{ dockerhub_username  }}
               password: {{ dockerhub_password  }}
 
-
-tool:
-  git:
-    installations:
-      - name: git
-        home: /usr/local/bin/git
 
