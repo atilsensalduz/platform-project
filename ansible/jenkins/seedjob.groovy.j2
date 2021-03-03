@@ -54,7 +54,7 @@ pipeline {
                     clusterName: "{{ cluster_name  }}",
                     namespace: "{{ namespace }}"
                     ]) {
-                          sh 'kubectl apply -f deployment.yaml'
+                          sh 'kubectl apply -f deployment.yaml --insecure-skip-tls-verify'
                        }
                 }
              } 
