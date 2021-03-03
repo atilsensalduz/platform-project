@@ -70,10 +70,13 @@ cd /workspace/ansible
 ansible-playbook infra-up.yaml
 ```
 
-*Run command and all infrastructure setup has begun. One ec2 instance for jenkins master and 3 nodes kubernetes cluster. One of them master and other two ec2 instances has worker role. Also all infrastrue in the free tier. I used t2.micro instance type.
-*Used the jenkins configuration as code plugin and all configuration in the jenkins-casc.yaml.j2. I use ninja template for ansible render all configuration files. You must add all required information in the jenkins.yml playbook
-*Used the kops for kubernetes cluster installation on the aws. All kops configuration in the /workspace/kops/ directory. You should change the clustername and kops state s3 bucket name in the /workspace/kops/group_vars/all/vars.yaml
-*Wrote the simple web-app for demonstrate purposes. I choose next.js simple random dog image app. Also have /ping and /liveness routes for readiness and liveness probe in the kubernetes deployment
+Run command and all infrastructure setup has begun. One ec2 instance for jenkins master and 3 nodes kubernetes cluster. One of them master and other two ec2 instances has worker role. Also all infrastrue in the free tier. I used t2.micro instance type.
+
+Used the jenkins configuration as code plugin and all configuration in the jenkins-casc.yaml.j2. I use ninja template for ansible render all configuration files. You must add all required information in the jenkins.yml playbook.
+
+Used the kops for kubernetes cluster installation on the aws. All kops configuration in the /workspace/kops/ directory. You should change the clustername and kops state s3 bucket name in the /workspace/kops/group_vars/all/vars.yaml.
+
+Wrote the simple web-app for demonstrate purposes. I choose next.js simple random dog image app. Also have /ping and /liveness routes for readiness and liveness probe in the kubernetes deployment.
 
 How to destroy all infrastucture, follow these steps:
 
