@@ -46,16 +46,18 @@ pipeline {
         }
         stage('List nodes') {
            steps{
-              withKubeConfig([credentialsId: 'kubeconfigID',
+             dir("web-app"){
+                withKubeConfig([credentialsId: 'kubeconfigID',
                     caCertificate: "{{ ca }}",
                     serverUrl: "{{ server_url  }}",
                     contextName: "{{ context_name  }}",
                     clusterName: "{{ cluster_name  }}",
-                    namespace: 'default'
+                    namespace: "{{ namespace }}"
                     ]) {
-                          sh 'kubectl get nodes'
+                          sh 'kubectl apply -f deployment.yaml'
                        }
-              } 
+                }
+             } 
         }
 
     }
