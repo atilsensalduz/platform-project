@@ -35,7 +35,7 @@
       var: kops_vpc_id
 
   - name: create cluster config
-    shell: kops create cluster --zones={{ aws_zones }}  --name={{ cluster_name }} --node-count={{ node_count }} --node-size={{ node_size }} --master-size={{ master_size }} --master-count={{ master_count }} --dns private --ssh-public-key={{ ssh_public_key }} --vpc={{ kops_vpc_id }} --subnets={{ kops_subnet_id }} --state {{ state_store }}
+    shell: kops create cluster --zones={{ aws_zones }}  --name={{ cluster_name }} --node-count={{ node_count }} --node-size={{ node_size }} --master-size={{ master_size }} --master-count={{ master_count }} --dns private --ssh-public-key={{ ssh_public_key }} --vpc={{ kops_vpc_id }} --subnets={{ kops_subnet_id }} --state {{ state_store }} --networking calico
 
   - name: create cluster
     shell: kops update cluster --name {{ cluster_name }} --yes --admin
