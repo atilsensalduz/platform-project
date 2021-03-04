@@ -9,7 +9,7 @@ export default class extends Component {
   }
 
   static async getInitialProps() {
-    const res = await fetch("https:///random.dog/woof.json?filter=mp4,webm")
+    const res = await fetch("https://random.dog/woof.json?filter=mp4,webm")
     const data = await res.json()
 
     return {
