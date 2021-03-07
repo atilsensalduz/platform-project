@@ -20,7 +20,6 @@ pipeline {
       dockerImage = ''
     }
     agent any
-    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/atileren/platform-project.git']]]
     triggers {
         githubPush()
     }
