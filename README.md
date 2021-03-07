@@ -46,7 +46,7 @@ configure aws credential:
 aws configure
 ```
 
-kops user credential requirment 
+kops user credential requirments:
 
 ```
 aws iam create-group --group-name kops
