@@ -16,3 +16,4 @@ docker
 kubernetes-credentials-provider
 kubernetes-cli
 kubernetes-cd
+github
