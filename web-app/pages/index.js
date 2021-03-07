@@ -20,7 +20,7 @@ export default class extends Component {
   render () {
     return (
       <div className="homepage-wrapper">
-        <h1>Random Dog Image V1</h1>
+        <h1>Random Dog Image V2</h1>
         <img src={this.props.imageURL} />
       </div>
     )
