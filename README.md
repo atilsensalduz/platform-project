@@ -20,7 +20,7 @@ sudo dnf install ansible
 
 ```
 
-terraform installation:
+Terraform installation:
 
 ```
 sudo dnf -y install wget
