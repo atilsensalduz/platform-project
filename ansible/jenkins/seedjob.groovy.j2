@@ -12,7 +12,6 @@ def create_pipeline(String name) {
             cps {
                 sandbox(true)
                 script("""
-// this is an example declarative pipeline that says hello and goodbye
 pipeline {
     environment {
       registry = "{{ dockerhub_username }}/web-app"
@@ -62,7 +61,7 @@ pipeline {
                 }
              } 
         }
-        stage(rollout deployment') {
+        stage('rollout deployment') {
            steps{
              dir("web-app"){
                 withKubeConfig([credentialsId: 'kubeconfigID',
